@@ -1,0 +1,8 @@
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define LINK_COUNT_PER_LEG 2
+#define POINT_DESCRIPTION_SIZE 32
+#define LEG_DESCRIPTION_SIZE 32
+
+#endif // CONFIG_H
