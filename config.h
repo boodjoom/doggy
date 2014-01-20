@@ -30,4 +30,22 @@
 #define LEFT_FRONT_LINK_1_LEN 18
 #define LEFT_FRONT_LINK_2_LEN 19
 
+//step profile
+#define STAY    "4444"
+#define START_PHASES 4
+#define START_0 "4333"
+#define START_1 "3522"
+#define START_2 "2461"
+#define START_3 "1357"
+#define WALK_PHASES 4
+#define WALK_0  "7135"
+#define WALK_1  "5713"
+#define WALK_2  "3571"
+#define WALK_3  "1357"
+#define STOP_PHASES 4
+#define STOP_0  "4000"
+#define STOP_1  "0400"
+#define STOP_2  "0040"
+#define STOP_3  "0004"
+
 #endif // CONFIG_H
