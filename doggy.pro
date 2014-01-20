@@ -4,9 +4,18 @@ CONFIG -= qt
 
 SOURCES += main.cpp \
     leg.cpp \
-    point.cpp
+    point.cpp \
+    link.cpp \
+    utils.cpp \
+    stepplanner.cpp \
+    body.cpp
 
 HEADERS += \
     leg.h \
-    point.h
+    point.h \
+    link.h \
+    utils.h \
+    config.h \
+    stepplanner.h \
+    body.h
 
