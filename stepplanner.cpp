@@ -1,21 +1,32 @@
 #include "stepplanner.h"
 #include "stdlib.h"
 
+#define OK 0
+
 StepPlanner::StepPlanner()
 {
-    _state=STATE_INIT;
+    _action=ACTION_NONE;
+    _new_action=ACTION_NONE;
+    _direction=DIRECTION_FORWARD;
     _phase=PHASE_0;
 }
 
 ostream& operator<<(ostream& os, const StepPlanner p)
 {
-    os<<p._b;
+    os<<"Action="<<p._action<<" Phase="<<p._phase<<" Dir="<<p._direction<<" NewAct="<<p._new_action<<endl;
     return os;
 }
 
-LegsPos StepPlanner::NextStepWalk()
+StepMap StepPlanner::NextStepWalk(int direction)
 {
-    LegsPos lp;
+    if(direction==DIRECTION_FORWARD)
+        return NextStepForward();
+    else return NextStepBackward();
+}
+
+StepMap StepPlanner::NextStepForward()
+{
+    StepMap lp;
     char tmp[4];
     switch(_phase)
     {
@@ -42,23 +53,23 @@ LegsPos StepPlanner::NextStepWalk()
     return lp;
 }
 
-LegsPos StepPlanner::NextStepStart()
+StepMap StepPlanner::NextStepBackward()
 {
-    LegsPos lp;
+    StepMap lp;
     char tmp[4];
     switch(_phase)
     {
     case PHASE_0:
-        strcpy(tmp,START_0);
+        strcpy(tmp,WALK_2);
         break;
     case PHASE_1:
-        strcpy(tmp,START_1);
+        strcpy(tmp,WALK_1);
         break;
     case PHASE_2:
-        strcpy(tmp,START_2);
+        strcpy(tmp,WALK_0);
         break;
     case PHASE_3:
-        strcpy(tmp,START_3);
+        strcpy(tmp,WALK_3);
         break;
     }
     char n[2];
@@ -71,9 +82,81 @@ LegsPos StepPlanner::NextStepStart()
     return lp;
 }
 
-LegsPos StepPlanner::NextStepStop()
+StepMap StepPlanner::NextStepStart(int direction)
 {
-    LegsPos lp;
+    if(direction==DIRECTION_FORWARD)
+        return NextStepStartF();
+    else return NextStepStartB();
+}
+
+StepMap StepPlanner::NextStepStartF()
+{
+    StepMap lp;
+    char tmp[4];
+    switch(_phase)
+    {
+    case PHASE_0:
+        strcpy(tmp,FORWARD_0);
+        break;
+    case PHASE_1:
+        strcpy(tmp,FORWARD_1);
+        break;
+    case PHASE_2:
+        strcpy(tmp,FORWARD_2);
+        break;
+    case PHASE_3:
+        strcpy(tmp,FORWARD_3);
+        break;
+    }
+    char n[2];
+    n[1]='\0';
+    for(int i=0;i<4;i++)
+    {
+        n[0]=tmp[i];
+        lp._legspos[i]=atoi(n);
+    }
+    return lp;
+}
+
+StepMap StepPlanner::NextStepStartB()
+{
+    StepMap lp;
+    char tmp[4];
+    switch(_phase)
+    {
+    case PHASE_0:
+        strcpy(tmp,BACKWARD_0);
+        break;
+    case PHASE_1:
+        strcpy(tmp,BACKWARD_1);
+        break;
+    case PHASE_2:
+        strcpy(tmp,BACKWARD_2);
+        break;
+    case PHASE_3:
+        strcpy(tmp,BACKWARD_3);
+        break;
+    }
+    char n[2];
+    n[1]='\0';
+    for(int i=0;i<4;i++)
+    {
+        n[0]=tmp[i];
+        lp._legspos[i]=atoi(n);
+    }
+    return lp;
+}
+
+StepMap StepPlanner::NextStepStop(int direction)
+{
+    if(direction==DIRECTION_FORWARD)
+        return NextStepStopF();
+    else return NextStepStopB();
+}
+
+StepMap StepPlanner::NextStepStopF()
+{
+    StepMap lp;
     char tmp[4];
     switch(_phase)
     {
@@ -100,36 +183,156 @@ LegsPos StepPlanner::NextStepStop()
     return lp;
 }
 
-LegsPos StepPlanner::NextStepInit()
+StepMap StepPlanner::NextStepStopB()
 {
-    return NextStepStop();
+    StepMap lp;
+    char tmp[4];
+    switch(_phase)
+    {
+    case PHASE_0:
+        strcpy(tmp,STOP_3);
+        break;
+    case PHASE_1:
+        strcpy(tmp,STOP_2);
+        break;
+    case PHASE_2:
+        strcpy(tmp,STOP_1);
+        break;
+    case PHASE_3:
+        strcpy(tmp,STOP_0);
+        break;
+    }
+    char n[2];
+    n[1]='\0';
+    for(int i=0;i<4;i++)
+    {
+        n[0]=tmp[i];
+        lp._legspos[i]=atoi(n);
+    }
+    return lp;
 }
 
-LegsPos StepPlanner::GetNextStep()
+StepMap StepPlanner::NextStepInit()
 {
-    LegPos lp;
-    switch(_state)
+    return NextStepStopF();
+}
+
+StepMap StepPlanner::Stay()
+{
+    StepMap lp;
+    char tmp[4];
+    strcpy(tmp,STAY);
+    char n[2];
+    n[1]='\0';
+    for(int i=0;i<4;i++)
     {
-        case STATE_INIT:
+        n[0]=tmp[i];
+        lp._legspos[i]=atoi(n);
+    }
+    return lp;
+}
+
+StepMap StepPlanner::GetNextStep()
+{
+    StepMap lp;
+    switch(_action)
+    {
+        case ACTION_STAY:
+            lp=Stay();
+            break;
+        case ACTION_INIT:
             lp=NextStepInit();
             break;
-        case STATE_START:
-            lp=NextStepStart();
+        case ACTION_START:
+            lp=NextStepStart(_direction);
             break;
-        case STATE_WALK:
-            lp=NextStepWalk();
+        case ACTION_WALK:
+            lp=NextStepWalk(_direction);
             break;
-        case STATE_STOP:
-            lp=NextStepStop();
+        case ACTION_STOP:
+            lp=NextStepStop(_direction);
             break;
     }
     NextPhase();
+    UpdateAction();
     return lp;
+}
+
+void StepPlanner::Init()
+{
+    if(_action==ACTION_NONE)
+        _action=ACTION_INIT;
+}
+
+int StepPlanner::Run(int direction)
+{
+    if(_action!=ACTION_WALK)
+    {
+        _new_action=ACTION_START;
+        _direction=direction;
+    }
+    return OK;
+}
+
+int StepPlanner::Stop()
+{
+    if(_action==ACTION_WALK)
+        _new_action=ACTION_STOP;
+    return OK;
 }
 
 void StepPlanner::NextPhase()
 {
     _phase++;
-    if(_phase>3)
-        _phase=0;
+    if(_phase>3 || _action==ACTION_STAY || _action==ACTION_NONE)
+        _phase=PHASE_0;
+}
+
+void StepPlanner::UpdateAction()
+{
+    if(_phase==PHASE_0)
+    {
+        if(_new_action!=ACTION_NONE)
+        {
+            _action=_new_action;
+            _new_action=ACTION_NONE;
+        } else
+        {
+            switch(_action)
+            {
+            case ACTION_STAY:
+                return;
+            case ACTION_INIT:
+            case ACTION_STOP:
+                _action=ACTION_STAY;
+                break;
+            case ACTION_START:
+                _action=ACTION_WALK;
+                break;
+            }
+        }
+    }
+}
+
+ostream& operator <<(ostream& os, const StepMap p)
+{
+    for(int i=0;i<4;i++)
+        cout<<p._legspos[i];
+    cout<<endl;
+    return os;
+}
+
+bool StepMap::operator ==(StepMap &sm)
+{
+    for(int i=0;i<4;i++)
+        if(_legspos[i]!=sm._legspos[i] && _legspos[i]!=0 && sm._legspos[i]!=0)
+            return false;
+    return true;
+}
+
+StepMap &StepMap::operator =(StepMap sm)
+{
+    for(int i=0;i<4;i++)
+        this->_legspos[i]=sm._legspos[i];
+    return *this;
 }

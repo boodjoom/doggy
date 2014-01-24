@@ -8,7 +8,6 @@ Link::Link(int num)
 
 Link::Link()
     :_cd(0.0)
-    ,_fi(0.0)
 {
 }
 

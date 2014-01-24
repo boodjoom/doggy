@@ -2,6 +2,9 @@
 #include "utils.h"
 #include "math.h"
 
+#define ERROR_POINT_IS_UNREACHEBLE 1
+#define OK
+
 Leg::Leg()
 {
     _description=new char[LEG_DESCRIPTION_SIZE];
@@ -37,6 +40,7 @@ void Leg::SetDescription(const char *description)
 Leg_angles Leg::GetAgles(Point p)
 {
     Utils u;
+    Leg_angles la;
     ccirez cci = u.cci(_origin,_links[0].GetLength(),p,_links[1].GetLength());
     if(cci.count==2)
     {
@@ -44,21 +48,28 @@ Leg_angles Leg::GetAgles(Point p)
         double fi2=atan2(cci.points[1].GetY()-_origin.GetY(),cci.points[1].GetX()-_origin.GetX());
         if(fi1>fi2)
         {
-            _links[0].SetAngle(fi1);
-            _links[1].SetAngle(atan2(p.GetY()-cci.points[0].GetY(),p.GetX()-cci.points[0].GetX()));
+            la.SetAngle(0,fi1);
+            la.SetAngle(1,atan2(p.GetY()-cci.points[0].GetY(),p.GetX()-cci.points[0].GetX()));
         }
         else
         {
-            _links[0].SetAngle(fi2);
-            _links[1].SetAngle(atan2(p.GetY()-cci.points[1].GetY(),p.GetX()-cci.points[1].GetX()));
+            la.SetAngle(0,fi2);
+            la.SetAngle(1,atan2(p.GetY()-cci.points[1].GetY(),p.GetX()-cci.points[1].GetX()));
         }
     } else if(cci.count==1)
     {
-        _links[0].SetAngle(atan2(cci.points[0].GetY()-_origin.GetY(),cci.points[0].GetX()-_origin.GetX()));
-        _links[1].SetAngle(atan2(p.GetY()-cci.points[0].GetY(),p.GetX()-cci.points[0].GetX()));
-    }
-    Leg_angles la;
-    la=_links[0];
-    la=_links[1];
+        la.SetAngle(0,atan2(cci.points[0].GetY()-_origin.GetY(),cci.points[0].GetX()-_origin.GetX()));
+        la.SetAngle(1,atan2(p.GetY()-cci.points[0].GetY(),p.GetX()-cci.points[0].GetX()));
+    } else la.SetFail();
     return la;
+}
+
+int Leg::MoveLegToPoint(Point p, int duration_ms)
+{
+    Leg_angles la=GetAgles(p);
+    if(la.IsFail())
+        return ERROR_POINT_IS_UNREACHEBLE;
+    _links[0].MoveToAngle(la.GetFirst(),duration_ms);
+    _links[1].MoveToAngle(la.GetSecond(),duration_ms);
+    _current=p;
 }

@@ -8,7 +8,9 @@ SOURCES += main.cpp \
     link.cpp \
     utils.cpp \
     stepplanner.cpp \
-    body.cpp
+    body.cpp \
+    servo.cpp \
+    walker.cpp
 
 HEADERS += \
     leg.h \
@@ -17,5 +19,7 @@ HEADERS += \
     utils.h \
     config.h \
     stepplanner.h \
-    body.h
+    body.h \
+    servo.h \
+    walker.h
 

@@ -32,11 +32,16 @@
 
 //step profile
 #define STAY    "4444"
-#define START_PHASES 4
-#define START_0 "4333"
-#define START_1 "3522"
-#define START_2 "2461"
-#define START_3 "1357"
+#define FORWARD_PHASES 4
+#define FORWARD_0 "4333"
+#define FORWARD_1 "3522"
+#define FORWARD_2 "2461"
+#define FORWARD_3 "1357"
+#define BACKWARD_PHASES 4
+#define BACKWARD_0 "5554"
+#define BACKWARD_1 "6635"
+#define BACKWARD_2 "7246"
+#define BACKWARD_3 "1357"
 #define WALK_PHASES 4
 #define WALK_0  "7135"
 #define WALK_1  "5713"

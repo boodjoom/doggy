@@ -2,6 +2,7 @@
 #include "config.h"
 
 Body::Body()
+    :_clearance(150)
 {
     _legs=new Leg[4];
     _legs[0].SetDescription("right back");
