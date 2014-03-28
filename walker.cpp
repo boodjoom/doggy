@@ -3,6 +3,7 @@
 Walker::Walker()
     :StepPlanner()
     ,_step_length(100)
+    ,_step_height(50)
     ,_delay_ms(100)
     ,_step_duration_ms(1000)
     ,_the_body(NULL)
@@ -16,7 +17,7 @@ int Walker::Execute()
 {
     StepMap sm;
     sm=GetNextStep();
-    if(sm==_prev_map)
+    if(_prev_map==sm)
         return 0;
     if(_counter==0)
         Phase0(sm);
@@ -25,8 +26,14 @@ int Walker::Execute()
     else if(_counter==_c_leg_down)
         Phase2(sm);
     IncCounter();
-    _prev_map=sm;
+    _prev_map+=sm;
     return 1;
+}
+
+void Walker::Initialize()
+{
+    UpdateCValues();
+    Init();
 }
 
 void Walker::UpdateCValues()
@@ -36,8 +43,10 @@ void Walker::UpdateCValues()
     prop=(double)_step_height/(double)_step_length;
     prop=1.0+2.0*prop;
     int leg_fly_ms=(int)(((double)_step_duration_ms/prop)+0.5);
-   _c_leg_up=(_step_duration_ms-leg_fly_ms)/2;
-   _c_leg_down=_c_leg_up+leg_fly_ms;
+   _c_leg_up=((_step_duration_ms-leg_fly_ms)/2)/_delay_ms;
+   _c_leg_up=_c_leg_up*_delay_ms;
+   _c_leg_down=(_c_leg_up+leg_fly_ms)/_delay_ms;
+   _c_leg_down=_c_leg_down*_delay_ms;
 }
 
 void Walker::IncCounter()
@@ -88,7 +97,7 @@ void Walker::Phase0(StepMap sm)
         for(int i=0;i<4;i++)
             if(sm._legspos[i]<_prev_map._legspos[i])
                 MoveBody(i,sm._legspos[i]);
-            else
+            else if(sm._legspos[i]>_prev_map._legspos[i])
             {
                 MoveLegUp(i);
             }
@@ -99,7 +108,7 @@ void Walker::Phase0(StepMap sm)
         for(int i=0;i<4;i++)
             if(sm._legspos[i]>_prev_map._legspos[i])
                 MoveBody(i,sm._legspos[i]);
-            else
+            else if(sm._legspos[i]<_prev_map._legspos[i])
             {
                 MoveLegUp(i);
             }

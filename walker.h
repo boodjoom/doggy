@@ -16,6 +16,7 @@ public:
     void SetStepDuration(int step_duration_ms){_step_duration_ms=step_duration_ms;}
     void SetBody(Body& the_body){_the_body=&the_body;}
     void SetStepHeight(int step_height){_step_height=step_height;}
+    void Initialize();
 private:
     void UpdateCValues();
     void IncCounter();

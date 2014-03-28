@@ -322,10 +322,10 @@ ostream& operator <<(ostream& os, const StepMap p)
     return os;
 }
 
-bool StepMap::operator ==(StepMap &sm)
+bool StepMap::operator== (StepMap &sm)
 {
     for(int i=0;i<4;i++)
-        if(_legspos[i]!=sm._legspos[i] && _legspos[i]!=0 && sm._legspos[i]!=0)
+        if(_legspos[i]!=sm._legspos[i] && sm._legspos[i]!=0)
             return false;
     return true;
 }
@@ -334,5 +334,13 @@ StepMap &StepMap::operator =(StepMap sm)
 {
     for(int i=0;i<4;i++)
         this->_legspos[i]=sm._legspos[i];
+    return *this;
+}
+
+StepMap &StepMap::operator+=(StepMap sm)
+{
+    for(int i=0;i<4;i++)
+        if(sm._legspos[i]!=0)
+            this->_legspos[i]=sm._legspos[i];
     return *this;
 }

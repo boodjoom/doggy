@@ -10,7 +10,8 @@ SOURCES += main.cpp \
     stepplanner.cpp \
     body.cpp \
     servo.cpp \
-    walker.cpp
+    walker.cpp \
+    motor.cpp
 
 HEADERS += \
     leg.h \
@@ -21,5 +22,6 @@ HEADERS += \
     stepplanner.h \
     body.h \
     servo.h \
-    walker.h
+    walker.h \
+    motor.h
 

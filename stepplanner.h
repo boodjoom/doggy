@@ -22,8 +22,9 @@ class StepMap
 public:
     StepMap(){for(int i=0;i<4;i++)_legspos[i]=0;}
     friend ostream& operator<<(ostream& os, const StepMap p);
-    bool operator ==(StepMap& sm);
+    bool operator== (StepMap& sm);
     StepMap& operator=(StepMap sm);
+    StepMap& operator+=(StepMap sm);
     int _legspos[4];
 };
 
@@ -32,10 +33,10 @@ class StepPlanner
 public:
     StepPlanner();
     friend ostream& operator<<(ostream& os, const StepPlanner p);
-    void Init();
     int Stop();
     //int GetStatus();
 protected:
+    void Init();
     int _direction;
     int Run(int direction=DIRECTION_FORWARD);
     StepMap GetNextStep();
